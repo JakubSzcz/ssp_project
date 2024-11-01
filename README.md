@@ -2,4 +2,5 @@
 
 ## Topology
 
-![topologia](https://github.com/user-attachments/assets/ecaa406a-3997-4120-9df2-84663c6dc722)
+![topologiav2](https://github.com/user-attachments/assets/53e7bb63-0fbb-41d9-87bb-e2cabfcd995f)
+
