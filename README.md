@@ -2,7 +2,8 @@
 
 ## Topology
 
-![topologiav2](https://github.com/user-attachments/assets/53e7bb63-0fbb-41d9-87bb-e2cabfcd995f)
+![topologia](https://github.com/user-attachments/assets/5128c0a8-fb29-4e17-b0a2-27d039dc9efc)
+
 
 
 ## Installation
