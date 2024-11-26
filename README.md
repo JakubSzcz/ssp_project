@@ -8,7 +8,12 @@
 
 ## Installation
 
-1. Downlaod `topology.py` file on the mininet machine.
+1. Clone the repository into mininet machine (POX and mininet included).
 
 ## Run 
+1. Run POX controller
+    ```console
+    $cd pox
+    $./pox.py samples.pretty_log forwarding.l2_learning openflow.spanning_tree openflow.discovery
+    ```
 1. Run mininet: `sudo python topology.py`
