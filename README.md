@@ -9,6 +9,7 @@
 ## Installation
 
 1. Clone the repository into mininet machine (POX and mininet included).
+1. Run: `source ./scripts/setup.sh`
 
 ## Run 
 1. Run POX controller
