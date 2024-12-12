@@ -14,12 +14,13 @@ def myNetwork():
 
     net = Mininet( topo=None,
                    build=False,
-                   ipBase='10.0.0.0/8')
+                   ipBase='192.168.0.0/24')
 
     info( '*** Adding controller\n' )
     c0=net.addController(name='c0',
-                      controller=Controller,
+                      controller=RemoteController,
                       protocol='tcp',
+                      ip='127.0.0.1',
                       port=6633)
 
     info( '*** Add switches\n')
@@ -30,9 +31,9 @@ def myNetwork():
     s1 = net.addSwitch('s1', cls=OVSKernelSwitch)
 
     info( '*** Add hosts\n')
-    h3 = net.addHost('h3', cls=Host, ip='192.168.0.3', defaultRoute=None)
-    h2 = net.addHost('h2', cls=Host, ip='192.168.0.2', defaultRoute=None)
-    h1 = net.addHost('h1', cls=Host, ip='192.168.0.1', defaultRoute=None)
+    h3 = net.addHost('h3', cls=Host, ip='192.168.0.3/24', defaultRoute=None)
+    h2 = net.addHost('h2', cls=Host, ip='192.168.0.2/24', defaultRoute=None)
+    h1 = net.addHost('h1', cls=Host, ip='192.168.0.1/24', defaultRoute=None)
 
     info( '*** Add links\n')
     net.addLink(s1, s2)
