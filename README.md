@@ -8,8 +8,13 @@
 
 ## Installation
 1. Install floodlight machine: http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-vm.zip
+1. Install x-server on host machine e.g. https://sourceforge.net/projects/vcxsrv/
 1. Clone the repository into mininet floodlight machine
-1. Download and unzip floodlight controller: http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-1.2-lab2.zip
+1. Download and unzip floodlight controller [link](http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-1.2-lab7.zip)
+    ```console
+    wget http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-1.2-lab7.zip
+    unzip floodlight-1.2-lab7.zip
+    ```
 1. Copy java files to controller folder
     ```console
     rm floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
@@ -17,16 +22,17 @@
     ```
 1. Create large files for traffic simulation
     ```console
-    floodlight@floodlight:~/ssp_project$ source ./scripts/setup.sh
+    source ./scripts/setup.sh
     ```
 
 ## Run 
 1. Run Floodlight controller
+    - Run x-server on host machine
     - Run eclipse
         ```console
         eclipse &
         ```
-    - Launch java code
+    - Launch floodlight controller project
 1. Open mininet
     ```console
     sudo python topology.py
