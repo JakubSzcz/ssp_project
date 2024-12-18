@@ -21,13 +21,6 @@
     rm floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
     cp java/* floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt
     ```
-
-On the mininet virtual machine:
-1. Clone the repository
-    ```console
-    git clone https://github.com/JakubSzcz/ssp_project.git
-    cd ssp_project
-    ```
 1. Create large files for traffic simulation
     ```console
     source ./scripts/setup.sh
