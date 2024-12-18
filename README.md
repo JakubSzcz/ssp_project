@@ -7,17 +7,31 @@
 
 
 ## Installation
-1. Clone the repository into mininet machine (POX and mininet included).
+1. Install floodlight machine: http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-vm.zip
+1. Clone the repository into mininet floodlight machine
+1. Download and unzip floodlight controller: http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-1.2-lab2.zip
+1. Copy java files to controller folder
+    ```console
+    rm floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
+    cp java/* floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt
+    ```
 1. Create large files for traffic simulation
     ```console
-    mininet@mininet-vm:~/ssp_project$ source ./scripts/setup.sh
+    floodlight@floodlight:~/ssp_project$ source ./scripts/setup.sh
     ```
 
 ## Run 
-1. Run POX controller
+1. Run Floodlight controller
+    - Run eclipse
+        ```console
+        eclipse &
+        ```
+    - Launch java code
+1. Open mininet
     ```console
-    mininet@mininet-vm:~$ cd pox
-    mininet@mininet-vm:~/pox$ ./pox.py samples.pretty_log forwarding.l2_learning openflow.spanning_tree openflow.discovery
+    sudo python topology.py
     ```
-1. Open mininet: `sudo python topology.py`
-1. Run traffic simulation: `source ./scripts/simulate-traffic.sh`
+1. Run traffic simulation
+    ```console
+    source ./scripts/simulate-traffic.sh
+    ```
