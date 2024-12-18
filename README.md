@@ -7,17 +7,55 @@
 
 
 ## Installation
-1. Clone the repository into mininet machine (POX and mininet included).
+1. Install floodlight machine: http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-vm.zip
+1. Install x-server on host machine e.g. https://sourceforge.net/projects/vcxsrv/
+1. Clone the repository into floodlight machine
+1. Download and unzip floodlight controller [link](http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-1.2-lab7.zip)
+    ```console
+    wget http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-1.2-lab7.zip
+    unzip floodlight-1.2-lab7.zip
+    rm floodlight-1.2-lab7.zip
+    ```
+1. Copy java files to controller folder
+    ```console
+    rm floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
+    cp java/* floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt
+    ```
 1. Create large files for traffic simulation
     ```console
-    mininet@mininet-vm:~/ssp_project$ source ./scripts/setup.sh
+    source ./scripts/setup.sh
     ```
 
 ## Run 
-1. Run POX controller
+1. Run Floodlight controller
+    - Run x-server on host machine
+    - Run eclipse
+        ```console
+        eclipse &
+        ```
+    - Launch floodlight controller project
+1. Add information about hosts from `info.json` file via Rest API:
+    - address: `http://<controller_ip>:8080/sdnlab/hosts`
+    - method: `POST`
+1. Open mininet
     ```console
-    mininet@mininet-vm:~$ cd pox
-    mininet@mininet-vm:~/pox$ ./pox.py samples.pretty_log forwarding.l2_learning openflow.spanning_tree openflow.discovery
+    sudo python topology.py
     ```
-1. Open mininet: `sudo python topology.py`
-1. Run traffic simulation: `source ./scripts/simulate-traffic.sh`
+1. Run traffic simulation
+   - Option 1 - run server and traffic generation separately
+        - open HTTP server on h3 (`xterm h3`)
+            ```console
+            source scripts/open-server.sh
+            ```
+        - run file download on h1 (`xterm h1`)
+            ```console
+            source scripts/gen-requests.sh 192.168.0.3 h1
+            ```
+        - run file download on h2 (`xterm h2`)
+            ```console
+            source scripts/gen-requests.sh 192.168.0.3 h2
+            ```
+   - Option 2 - run server and traffic generation in one script
+        ```console
+        source ./scripts/simulate-traffic.sh
+        ```
