@@ -90,11 +90,13 @@ public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 			ARP arp = (ARP) eth.getPayload();
 			dstIp = arp.getTargetProtocolAddress();
 		} else {
+			logger.debug("Protocol not supported");
 			return Command.STOP;
 		}
+		logger.info("SRC sw = {}", sw);
 		logger.info("IP = {}", dstIp);
 		SingleHostInfo info = Flows.hosts.getHostInfo(dstIp);
-		if (info == null){
+		if (info == null) {
 			logger.debug("Host not found");
 			return Command.STOP;
 		}
@@ -102,31 +104,37 @@ public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 		logger.info("host sw = {}", dstSwId);
 		DatapathId srcSw = sw.getId();
 		DatapathId dstSw = DatapathId.of(dstSwId);
-		Route route = SdnLabListener.getRouting().calculateSpfTree(srcSw, dstSw);
-		logger.info("route {}", route.getPath());
-		
-		List<NodePortTuple> path = route.getPath();
-		
-		DatapathId previousId = dstSw;
-		OFPort previousPort = OFPort.of(info.getPort());
-		
-		for (int i = path.size() - 1; i >= 0; i--){
-			NodePortTuple npt = path.get(i);
-			if (npt.getNodeId().equals(previousId)){
-				IOFSwitch s = switchService.getSwitch(npt.getNodeId());
-				logger.info("Test ID {}", npt.getNodeId());
-				logger.info("Test PORT IN {}", npt.getPortId());
-				logger.info("Test PORT OUT {}", previousPort);
-				Flows.simpleAdd(s, pin, cntx, npt.getPortId(), previousPort, false);
-				
+		if (dstSw.equals(srcSw)) {
+			Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), pin.getInPort(), true);
+		} else {
+			Route route = SdnLabListener.getRouting().calculateSpfTree(srcSw,
+					dstSw);
+			logger.info("route {}", route.getPath());
+
+			List<NodePortTuple> path = route.getPath();
+
+			DatapathId previousId = dstSw;
+			OFPort previousPort = OFPort.of(info.getPort());
+
+			for (int i = path.size() - 1; i >= 0; i--) {
+				NodePortTuple npt = path.get(i);
+				if (npt.getNodeId().equals(previousId)) {
+					IOFSwitch s = switchService.getSwitch(npt.getNodeId());
+					logger.info("Test ID {}", npt.getNodeId());
+					logger.info("Test PORT IN {}", npt.getPortId());
+					logger.info("Test PORT OUT {}", previousPort);
+					Flows.simpleAdd(s, pin, cntx, npt.getPortId(),
+							previousPort, false);
+
+				}
+				previousId = npt.getNodeId();
+				previousPort = npt.getPortId();
 			}
-			previousId = npt.getNodeId();
-			previousPort = npt.getPortId();
+			logger.info("Test ID {}", srcSw);
+			logger.info("Test PORT IN {}", pin.getInPort());
+			logger.info("Test PORT OUT {}", previousPort);
+			Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), previousPort, true);
 		}
-		logger.info("Test ID {}", srcSw);
-		logger.info("Test PORT IN {}", pin.getInPort());
-		logger.info("Test PORT OUT {}", previousPort);
-		Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), previousPort, true);
 
 		return Command.STOP;
 	}

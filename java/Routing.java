@@ -26,6 +26,8 @@ public class Routing {
 	}
 
 	public Route calculateSpf(DatapathId src, DatapathId dst) {
+		logger.info("SRC = {}", src);
+		logger.info("DST = {}", dst);
 		Route route = routingService.getRoute(src, dst, U64.of(0));
 		return route;
 	}
