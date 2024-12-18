@@ -34,6 +34,9 @@
         eclipse &
         ```
     - Launch floodlight controller project
+1. Add information about hosts from `info.json` file via Rest API:
+    - address: `http://<controller_ip>:8080/sdnlab/hosts`
+    - method: `POST`
 1. Open mininet
     ```console
     sudo python topology.py
