@@ -14,6 +14,7 @@
     ```console
     wget http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-1.2-lab7.zip
     unzip floodlight-1.2-lab7.zip
+    rm floodlight-1.2-lab7.zip
     ```
 1. Copy java files to controller folder
     ```console
