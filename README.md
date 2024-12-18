@@ -49,6 +49,20 @@ On the mininet virtual machine:
     sudo python topology.py
     ```
 1. Run traffic simulation
-    ```console
-    source ./scripts/simulate-traffic.sh
-    ```
+   - Option 1 - run server and traffic generation separately
+        - open HTTP server on h3 (`xterm h3`)
+            ```console
+            source scripts/open-server.sh
+            ```
+        - run file download on h1 (`xterm h1`)
+            ```console
+            source scripts/gen-requests.sh 192.168.0.3 h1
+            ```
+        - run file download on h2 (`xterm h2`)
+            ```console
+            source scripts/gen-requests.sh 192.168.0.3 h2
+            ```
+   - Option 2 - run server and traffic generation in one script
+        ```console
+        source ./scripts/simulate-traffic.sh
+        ```
