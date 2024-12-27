@@ -10,6 +10,17 @@ from mininet.log import setLogLevel, info
 from mininet.link import TCLink, Intf
 from subprocess import call
 
+def int2dpid( dpid ):
+    try:
+         dpid = hex( dpid )[ 2: ]
+         dpid = '0' * ( 16 - len( dpid ) ) + dpid
+         return dpid
+    except IndexError:
+         raise Exception( 'Unable to derive default datapath ID - '
+                             'please either specify a dpid or use a '
+                             'canonical switch name such as s23.' )
+
+
 def myNetwork():
 
     net = Mininet( topo=None,
@@ -24,11 +35,11 @@ def myNetwork():
                       port=6653)
 
     info( '*** Add switches\n')
-    s5 = net.addSwitch('s5', cls=OVSKernelSwitch)
-    s2 = net.addSwitch('s2', cls=OVSKernelSwitch)
-    s4 = net.addSwitch('s4', cls=OVSKernelSwitch)
-    s3 = net.addSwitch('s3', cls=OVSKernelSwitch)
-    s1 = net.addSwitch('s1', cls=OVSKernelSwitch)
+    s5 = net.addSwitch('s5', cls=OVSKernelSwitch, dpid=int2dpid(5))
+    s2 = net.addSwitch('s2', cls=OVSKernelSwitch, dpid=int2dpid(2))
+    s4 = net.addSwitch('s4', cls=OVSKernelSwitch, dpid=int2dpid(4))
+    s3 = net.addSwitch('s3', cls=OVSKernelSwitch, dpid=int2dpid(3))
+    s1 = net.addSwitch('s1', cls=OVSKernelSwitch, dpid=int2dpid(1))
 
     info( '*** Add hosts\n')
     h3 = net.addHost('h3', cls=Host, ip='192.168.0.3/24', defaultRoute=None)
@@ -37,16 +48,16 @@ def myNetwork():
 
     info( '*** Add links\n')
     net.addLink(s1, s2)
-    net.addLink(s2, s3)
-    net.addLink(s3, s4)
-    net.addLink(s4, s1)
+    net.addLink(s1, s3)
     net.addLink(s1, s5)
-    net.addLink(s5, s3)
+    net.addLink(s2, h1)    
+    net.addLink(s2, s4)
+    net.addLink(s2, s5)
+    net.addLink(s3, h3)
+    net.addLink(s3, s4)
+    net.addLink(s3, s5)
     net.addLink(s4, s5)
-    net.addLink(s5, s2)
-    net.addLink(s2, h1)
-    net.addLink(s3, h2)
-    net.addLink(s4, h3)
+    net.addLink(s4, h2)
 
     info( '*** Starting network\n')
     net.build()
@@ -69,4 +80,3 @@ def myNetwork():
 if __name__ == '__main__':
     setLogLevel( 'info' )
     myNetwork()
-
