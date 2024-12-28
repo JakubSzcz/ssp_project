@@ -1,14 +1,23 @@
 package pl.edu.agh.kt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.projectfloodlight.openflow.protocol.OFBucket;
+import org.projectfloodlight.openflow.protocol.OFFactory;
+import org.projectfloodlight.openflow.protocol.OFFlowAdd;
 import org.projectfloodlight.openflow.protocol.OFFlowMod;
+import org.projectfloodlight.openflow.protocol.OFGroupMod;
+import org.projectfloodlight.openflow.protocol.OFGroupType;
 import org.projectfloodlight.openflow.protocol.OFPacketIn;
 import org.projectfloodlight.openflow.protocol.OFPacketOut;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
 import org.projectfloodlight.openflow.protocol.action.OFActionOutput;
+import org.projectfloodlight.openflow.protocol.instruction.OFInstruction;
 import org.projectfloodlight.openflow.protocol.match.Match;
 import org.projectfloodlight.openflow.protocol.match.MatchField;
 import org.projectfloodlight.openflow.types.DatapathId;
@@ -17,8 +26,10 @@ import org.projectfloodlight.openflow.types.IPv4Address;
 import org.projectfloodlight.openflow.types.IpProtocol;
 import org.projectfloodlight.openflow.types.MacAddress;
 import org.projectfloodlight.openflow.types.OFBufferId;
+import org.projectfloodlight.openflow.types.OFGroup;
 import org.projectfloodlight.openflow.types.OFPort;
 import org.projectfloodlight.openflow.types.OFVlanVidMatch;
+import org.projectfloodlight.openflow.types.TableId;
 import org.projectfloodlight.openflow.types.TransportPort;
 import org.projectfloodlight.openflow.types.VlanVid;
 import org.slf4j.Logger;
@@ -54,6 +65,11 @@ public class Flows {
 
 	public static HostInfo hosts = new HostInfo();
 	public static List<DatapathId> swList = new ArrayList<>();
+	public static List<AdjacentNodeInfo> adjacencyList = new ArrayList<>();
+	
+	
+	public static Map<DatapathId, List<DatapathId>> adjacencyMap = new HashMap<>();
+	public static Map<DatapathId, Map<DatapathId, OFPort>> portAdjacencyMap = new HashMap<DatapathId, Map<DatapathId, OFPort>>();
 
 	public static short getIdleTimeout() {
 		return idleTimeout;
@@ -121,6 +137,50 @@ public class Flows {
 			}
 			sw.write(pob.build());
 		}
+	}
+
+	public static void bucketAdd(IOFSwitch sw, OFPacketIn pin,
+			FloodlightContext cntx, OFPort inPort,
+			Map<OFPort, Integer> outPorts, boolean packetOut) {
+		OFFactory factory = sw.getOFFactory();
+		logger.info("Version = {}", factory.getVersion());
+		// Step 1: Create buckets with weights
+		List<OFBucket> buckets = new ArrayList<>();
+		for (OFPort port : outPorts.keySet()) {
+			buckets.add(factory.buildBucket()
+					.setWeight(outPorts.get(port))
+					// Bucket weight
+					.setActions(
+							Collections.singletonList((OFAction) factory
+									.actions().buildOutput().setPort(port)
+									.setMaxLen(0xffff).build())).build());
+		}
+
+		// Step 2: Create the SELECT group
+		OFGroupMod groupMod = factory.buildGroupModify()
+				.setGroup(OFGroup.of(1)) // Group ID
+				.setGroupType(OFGroupType.SELECT).setBuckets(buckets).build();
+
+		// Send the GroupMod message
+		sw.write(groupMod);
+
+		// Step 3: Create a flow entry that forwards to the group
+		Match match = createMatchFromPacket(sw, inPort, cntx);
+
+		// Use OFInstruction as a generic type for Goto Group
+//        OFInstruction gotoGroup = factory.instructions().gotoGroup(OFGroup.of(1));
+//
+//        OFFlowAdd flowAdd = factory.buildFlowAdd()
+//                .setMatch(match)
+//                .setInstructions(Arrays.asList(
+//                        gotoGroup // Add the Goto Group instruction
+//                ))
+//                .setPriority(100) // Priority of the flow
+//                .setTableId(TableId.of(0)) // Table ID
+//                .build();
+//
+//        // Send the FlowMod message
+//        sw.write(flowAdd);
 	}
 
 	public static Match createMatchFromPacket(IOFSwitch sw, OFPort inPort,

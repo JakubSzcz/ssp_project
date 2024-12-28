@@ -24,14 +24,14 @@ public class HostInfo {
 	
 	public SingleHostInfo getHostInfo(IPv4Address ip){
 		String ip_string = ip.toString();
-		SingleHostInfo return_info = null;
+		SingleHostInfo returnInfo = null;
 		for(SingleHostInfo info : hostList){
 			if (info.getIp().equals(ip_string)){
-				return_info = info;
+				returnInfo = info;
 				break;
 			}
 		}
-		return return_info;
+		return returnInfo;
 	}
 
 }

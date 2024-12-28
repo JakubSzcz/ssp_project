@@ -1,6 +1,7 @@
 package pl.edu.agh.kt;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import net.floodlightcontroller.topology.NodePortTuple;
 
 import java.util.ArrayList;
 
+import org.sdnplatform.sync.internal.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,16 +69,8 @@ public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 			IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 
 		logger.info("************* NEW PACKET IN *************");
-		// PacketExtractor extractor = new PacketExtractor();
-		// extractor.packetExtract(cntx);
 
-		// TODO LAB 6
 		OFPacketIn pin = (OFPacketIn) msg;
-		// OFPort outPort = OFPort.of(0);
-		// if (pin.getInPort() == OFPort.of(1)) {
-		// outPort = OFPort.of(2);
-		// } else
-		// outPort = OFPort.of(1);
 
 		Ethernet eth = new Ethernet();
 		eth.deserialize(pin.getData(), 0, pin.getData().length);
@@ -105,35 +99,53 @@ public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 		DatapathId srcSw = sw.getId();
 		DatapathId dstSw = DatapathId.of(dstSwId);
 		if (dstSw.equals(srcSw)) {
-			Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), pin.getInPort(), true);
+			Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), pin.getInPort(),
+					true);
 		} else {
 			Route route = SdnLabListener.getRouting().calculateSpfTree(srcSw,
 					dstSw);
+			List<Pair<List<DatapathId>, Integer>> paths = SdnLabListener
+					.getRouting().getKPaths(srcSw, dstSw, 3);
+
 			logger.info("route {}", route.getPath());
-
-			List<NodePortTuple> path = route.getPath();
-
-			DatapathId previousId = dstSw;
-			OFPort previousPort = OFPort.of(info.getPort());
-
-			for (int i = path.size() - 1; i >= 0; i--) {
-				NodePortTuple npt = path.get(i);
-				if (npt.getNodeId().equals(previousId)) {
-					IOFSwitch s = switchService.getSwitch(npt.getNodeId());
-					logger.info("Test ID {}", npt.getNodeId());
-					logger.info("Test PORT IN {}", npt.getPortId());
-					logger.info("Test PORT OUT {}", previousPort);
-					Flows.simpleAdd(s, pin, cntx, npt.getPortId(),
-							previousPort, false);
-
+			Map<OFPort, Integer> outPorts = new HashMap<>();
+			for (Pair<List<DatapathId>, Integer> p : paths) {
+				List<NodePortTuple> path = new ArrayList<>();
+				for (int i = 0; i < p.getKey().size() - 1; i++) {
+					path.add(new NodePortTuple(p.getKey().get(i),
+							Flows.portAdjacencyMap.get(p.getKey().get(i)).get(
+									p.getKey().get(i + 1))));
+					path.add(new NodePortTuple(p.getKey().get(i + 1),
+							Flows.portAdjacencyMap.get(p.getKey().get(i + 1))
+									.get(p.getKey().get(i))));
 				}
-				previousId = npt.getNodeId();
-				previousPort = npt.getPortId();
+				logger.info("path = {}", path);
+
+				DatapathId previousId = dstSw;
+				OFPort previousPort = OFPort.of(info.getPort());
+
+				for (int i = path.size() - 1; i >= 0; i--) {
+					NodePortTuple npt = path.get(i);
+					if (npt.getNodeId().equals(previousId)) {
+						IOFSwitch s = switchService.getSwitch(npt.getNodeId());
+						logger.info("Test ID {}", npt.getNodeId());
+						logger.info("Test PORT IN {}", npt.getPortId());
+						logger.info("Test PORT OUT {}", previousPort);
+						Flows.simpleAdd(s, pin, cntx, npt.getPortId(),
+								previousPort, false);
+
+					}
+					previousId = npt.getNodeId();
+					previousPort = npt.getPortId();
+				}
+				logger.info("Test ID {}", srcSw);
+				logger.info("Test PORT IN {}", pin.getInPort());
+				logger.info("Test PORT OUT {}", previousPort);
+				outPorts.put(previousPort, p.getSecond());
 			}
-			logger.info("Test ID {}", srcSw);
-			logger.info("Test PORT IN {}", pin.getInPort());
-			logger.info("Test PORT OUT {}", previousPort);
-			Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), previousPort, true);
+			Flows.bucketAdd(sw, pin, cntx, pin.getInPort(), outPorts, true);
+
+			// List<NodePortTuple> path = route.getPath();
 		}
 
 		return Command.STOP;
