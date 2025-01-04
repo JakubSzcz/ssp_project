@@ -22,7 +22,7 @@ def int2dpid( dpid ):
 
 
 def myNetwork():
-    bandwidth = 1   # Mbit/s
+    bandwidth = 10   # Mbit/s
     net = Mininet( topo=None,
                    build=False,
                    link=TCLink,
