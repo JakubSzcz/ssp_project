@@ -49,6 +49,7 @@
             ```
             or
             ```console
+            cd files
             python3 -m http.server 8080
             ```
         - run file download on h1 (`xterm h1`)
