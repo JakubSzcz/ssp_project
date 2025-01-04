@@ -35,8 +35,9 @@
         ```
     - Launch floodlight controller project
 1. Add information about hosts from `info.json` file via Rest API:
-    - address: `http://<controller_ip>:8080/sdnlab/hosts`
-    - method: `POST`
+    ```console
+   curl -X POST http://127.0.0.1:8080/sdnlab/hosts -H 'Content-Type: application/json' -d @info.json
+    ```
 1. Open mininet
     ```console
     sudo python topology.py
