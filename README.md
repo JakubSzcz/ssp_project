@@ -54,11 +54,11 @@
             ```
         - run file download on h1 (`xterm h1`)
             ```console
-            source scripts/gen-requests.sh 192.168.0.3 h1
+            source scripts/gen-requests.sh 192.168.0.3
             ```
         - run file download on h2 (`xterm h2`)
             ```console
-            source scripts/gen-requests.sh 192.168.0.3 h2
+            source scripts/gen-requests.sh 192.168.0.3
             ```
    - Option 2 - run server and traffic generation in one script
         ```console
