@@ -47,6 +47,10 @@
             ```console
             source scripts/open-server.sh
             ```
+            or
+            ```console
+            python3 -m http.server 8080
+            ```
         - run file download on h1 (`xterm h1`)
             ```console
             source scripts/gen-requests.sh 192.168.0.3 h1
