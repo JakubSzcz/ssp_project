@@ -47,15 +47,29 @@
             ```console
             source scripts/open-server.sh
             ```
+            or
+            ```console
+            cd files
+            python3 -m http.server 8080
+            ```
         - run file download on h1 (`xterm h1`)
             ```console
-            source scripts/gen-requests.sh 192.168.0.3 h1
+            source scripts/gen-requests.sh 192.168.0.3
             ```
         - run file download on h2 (`xterm h2`)
             ```console
-            source scripts/gen-requests.sh 192.168.0.3 h2
+            source scripts/gen-requests.sh 192.168.0.3
             ```
    - Option 2 - run server and traffic generation in one script
         ```console
-        source ./scripts/simulate-traffic.sh
+        source ./scripts/simulate-traffic.s
+        ```
+1. Useful commands
+   - kill all wget instances
+        ```console
+        pkill wget
+        ```
+   - show wget instances with TCP ports
+        ```console
+        netstat -p | grep wget
         ```
