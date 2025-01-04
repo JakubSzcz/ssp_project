@@ -24,6 +24,9 @@ import org.projectfloodlight.openflow.types.VlanVid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.kt.rest.HostInfo;
+import pl.edu.agh.kt.rest.PathsInfo;
+
 import net.floodlightcontroller.core.FloodlightContext;
 import net.floodlightcontroller.core.IFloodlightProviderService;
 import net.floodlightcontroller.core.IOFSwitch;
@@ -53,6 +56,7 @@ public class Flows {
 	public static short hardTimeout = 0;
 
 	public static HostInfo hosts = new HostInfo();
+	public static PathsInfo paths = new PathsInfo();
 	public static List<DatapathId> swList = new ArrayList<>();
 
 	public static short getIdleTimeout() {

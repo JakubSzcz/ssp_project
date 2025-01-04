@@ -1,4 +1,4 @@
-package pl.edu.agh.kt;
+package pl.edu.agh.kt.rest;
 
 public class SingleHostInfo{
 	private String name;

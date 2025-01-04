@@ -1,4 +1,4 @@
-package pl.edu.agh.kt;
+package pl.edu.agh.kt.rest;
 
 import java.io.IOException;
 
@@ -7,6 +7,8 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pl.edu.agh.kt.Flows;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
