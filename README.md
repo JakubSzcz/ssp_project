@@ -62,5 +62,11 @@
             ```
    - Option 2 - run server and traffic generation in one script
         ```console
-        source ./scripts/simulate-traffic.sh
+        source ./scripts/simulate-traffic.s
         ```
+1. Useful commands
+   - kill all wget instances
+        ```console
+        pkill wget
+        ```
+   - show wget instances with TCP ports
