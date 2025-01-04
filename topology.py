@@ -22,9 +22,10 @@ def int2dpid( dpid ):
 
 
 def myNetwork():
-
+    bandwidth = 10   # Mbit/s
     net = Mininet( topo=None,
                    build=False,
+                   link=TCLink,
                    ipBase='192.168.0.0/24')
 
     info( '*** Adding controller\n' )
@@ -47,16 +48,16 @@ def myNetwork():
     h1 = net.addHost('h1', cls=Host, ip='192.168.0.1/24', defaultRoute=None)
 
     info( '*** Add links\n')
-    net.addLink(s1, s2)
-    net.addLink(s1, s3)
-    net.addLink(s1, s5)
-    net.addLink(s2, h1)    
-    net.addLink(s2, s4)
-    net.addLink(s2, s5)
+    net.addLink(s1, s2, bw=bandwidth)
+    net.addLink(s1, s3, bw=bandwidth)
+    net.addLink(s1, s5, bw=bandwidth)
+    net.addLink(s2, h1)
+    net.addLink(s2, s4, bw=bandwidth)
+    net.addLink(s2, s5, bw=bandwidth)
     net.addLink(s3, h3)
-    net.addLink(s3, s4)
-    net.addLink(s3, s5)
-    net.addLink(s4, s5)
+    net.addLink(s3, s4, bw=bandwidth)
+    net.addLink(s3, s5, bw=bandwidth)
+    net.addLink(s4, s5, bw=bandwidth)
     net.addLink(s4, h2)
 
     info( '*** Starting network\n')
