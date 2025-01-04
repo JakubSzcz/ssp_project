@@ -70,3 +70,6 @@
         pkill wget
         ```
    - show wget instances with TCP ports
+        ```console
+        netstat -p | grep wget
+        ```

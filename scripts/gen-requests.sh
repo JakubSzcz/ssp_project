@@ -1,7 +1,7 @@
 #!/bi$n/bash
 SERVER=$1
-MINWAIT=3
-MAXWAIT=7
+MINWAIT=2
+MAXWAIT=5
 while :
 do
     wget "http://${SERVER}:8080/5MBfile" -O /dev/null &
