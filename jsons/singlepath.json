@@ -30,8 +30,8 @@
                 [
                     {
                         "node": "3",
-                        "in_port": 1,
-                        "out_port": 2
+                        "in_port": 2,
+                        "out_port":1
                     },
                     {
                         "node": "1",
@@ -40,8 +40,8 @@
                     },
                     {
                         "node": "2",
-                        "in_port": 2,
-                        "out_port": 1
+                        "in_port": 1,
+                        "out_port": 2
                     }
                 ]
             ]
