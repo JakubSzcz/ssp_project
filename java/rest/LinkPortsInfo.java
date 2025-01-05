@@ -1,5 +1,8 @@
 package pl.edu.agh.kt.rest;
 
+import org.projectfloodlight.openflow.types.DatapathId;
+import org.projectfloodlight.openflow.types.OFPort;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LinkPortsInfo {
@@ -21,6 +24,10 @@ public class LinkPortsInfo {
 	public String getSwitchId() {
 		return switchId;
 	}
+	
+	public DatapathId getSwitchDatapathId(){
+		return DatapathId.of(this.switchId);
+	}
 
 	public void setSwitchId(String switchId) {
 		this.switchId = switchId;
@@ -28,6 +35,10 @@ public class LinkPortsInfo {
 
 	public int getInPort() {
 		return inPort;
+	}
+	
+	public OFPort getInOFPort(){
+		return OFPort.of(this.inPort);
 	}
 
 	public void setInPort(int inPort) {
@@ -37,6 +48,10 @@ public class LinkPortsInfo {
 	public int getOutPort() {
 		return outPort;
 	}
+	
+	public OFPort getOutOFPort(){
+		return OFPort.of(this.outPort);
+	}
 
 	public void setOutPort(int outPort) {
 		this.outPort = outPort;
@@ -44,6 +59,12 @@ public class LinkPortsInfo {
 
 	public LinkPortsInfo() {
 		super();
+	}
+
+	@Override
+	public String toString() {
+		return "LinkPortsInfo [switchId=" + switchId + ", inPort=" + inPort
+				+ ", outPort=" + outPort + "]";
 	}
 
 }
