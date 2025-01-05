@@ -32,10 +32,6 @@
         eclipse &
         ```
     - Launch floodlight controller project
-1. Add information about hosts from `hosts.json` file via Rest API:
-    ```console
-   curl -X POST http://127.0.0.1:8080/sdnlab/hosts -H 'Content-Type: application/json' -d @jsons/hosts.json
-    ```
 1. Add information about paths from `multipath.json` file via Rest API:
     ```console
    curl -X POST http://127.0.0.1:8080/sdnlab/paths -H 'Content-Type: application/json' -d @jsons/multipath.json
