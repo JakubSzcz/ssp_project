@@ -2,9 +2,7 @@
 
 ## Topology
 
-![topologia](https://github.com/user-attachments/assets/5128c0a8-fb29-4e17-b0a2-27d039dc9efc)
-
-
+![topology](https://github.com/user-attachments/assets/36939775-b968-4a80-8be9-e8c7d127c023)
 
 ## Installation
 1. Install floodlight machine: http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-vm.zip
