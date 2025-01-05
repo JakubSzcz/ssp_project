@@ -109,6 +109,12 @@ public class Flows {
 		}
 
 		if (packetOut) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			OFPacketOut.Builder pob = sw.getOFFactory().buildPacketOut();
 			pob.setActions(actions);
 			if (sw.getBuffers() == 0) {
@@ -140,16 +146,16 @@ public class Flows {
 		Match.Builder mb = sw.getOFFactory().buildMatch();
 		mb.setExact(MatchField.IN_PORT, inPort);
 
-		if (FLOWMOD_DEFAULT_MATCH_MAC) {
-			mb.setExact(MatchField.ETH_SRC, srcMac).setExact(
-					MatchField.ETH_DST, dstMac);
-		}
+//		if (FLOWMOD_DEFAULT_MATCH_MAC) {
+//			mb.setExact(MatchField.ETH_SRC, srcMac).setExact(
+//					MatchField.ETH_DST, dstMac);
+//		}
 
-		if (FLOWMOD_DEFAULT_MATCH_VLAN) {
-			if (!vlan.equals(VlanVid.ZERO)) {
-				mb.setExact(MatchField.VLAN_VID, OFVlanVidMatch.ofVlanVid(vlan));
-			}
-		}
+//		if (FLOWMOD_DEFAULT_MATCH_VLAN) {
+//			if (!vlan.equals(VlanVid.ZERO)) {
+//				mb.setExact(MatchField.VLAN_VID, OFVlanVidMatch.ofVlanVid(vlan));
+//			}
+//		}
 
 		// TODO Detect switch type and match to create hardware-implemented flow
 		if (eth.getEtherType() == EthType.IPv4) { /*
