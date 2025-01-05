@@ -16,7 +16,7 @@
     ```
 1. Copy java files to controller folder
     ```console
-    rm floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
+    rm -rf floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
     cp -r java/* floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt
     ```
 1. Create large files for traffic simulation
