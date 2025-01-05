@@ -1,4 +1,6 @@
-package pl.edu.agh.kt;
+package pl.edu.agh.kt.rest;
+
+import pl.edu.agh.kt.Flows;
 
 public class Timeout {
 	private short hardTimeout = 0;

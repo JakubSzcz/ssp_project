@@ -1,36 +1,33 @@
-package pl.edu.agh.kt;
+package pl.edu.agh.kt.rest;
 
 import java.io.IOException;
-import org.restlet.resource.Get;
+
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pl.edu.agh.kt.Flows;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class LabRestServer extends ServerResource{
+public class PathsServer extends ServerResource {
 	protected static Logger log = LoggerFactory.getLogger(LabRestServer.class);
-
-	@Get("json")
-	public String handleGet() throws JsonProcessingException {
-		log.info("handleGet");
-		return serialize(new Timeout(Flows.getIdleTimeout(),
-				Flows.getHardTimeout()));
-	}
-
+	
+	
 	@Post("json")
 	public String handlePost(String text) throws JsonProcessingException,
 			IOException {
-		log.info("handlePost");
-		Timeout timeout = new Timeout();
-		timeout = deserialize(text, Timeout.class);
-		Flows.setIdleTimeout(timeout.getIdleTimeout());
-		Flows.setHardTimeout(timeout.getHardTimeout());
-		return serialize(timeout);
+		log.info("handlePostPathsInfo");
+		PathsInfo paths = new PathsInfo();
+		paths = deserialize(text, PathsInfo.class);
+		Flows.paths = paths;
+		return serialize(paths);
 	}
 
+	
 	private static final ObjectMapper mapper;
 
 	static {
@@ -38,11 +35,11 @@ public class LabRestServer extends ServerResource{
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 	}
 
-	public static String serialize(Timeout t) throws JsonProcessingException {
-		return mapper.writeValueAsString(t);
+	public static String serialize(PathsInfo p) throws JsonProcessingException {
+		return mapper.writeValueAsString(p);
 	}
 
-	public static Timeout deserialize(String text, Class<Timeout> clazz)
+	public static PathsInfo deserialize(String text, Class<PathsInfo> clazz)
 			throws IOException {
 		return mapper.readValue(text, clazz);
 	}

@@ -2,9 +2,7 @@
 
 ## Topology
 
-![topologia](https://github.com/user-attachments/assets/5128c0a8-fb29-4e17-b0a2-27d039dc9efc)
-
-
+![topology](https://github.com/user-attachments/assets/36939775-b968-4a80-8be9-e8c7d127c023)
 
 ## Installation
 1. Install floodlight machine: http://www.kt.agh.edu.pl/~rzym/lectures/TI-SDN/floodlight-vm.zip
@@ -18,8 +16,8 @@
     ```
 1. Copy java files to controller folder
     ```console
-    rm floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
-    cp java/* floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt
+    rm -rf floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt/*
+    cp -r java/* floodlight-1.2-lab7/src/main/java/pl/edu/agh/kt
     ```
 1. Create large files for traffic simulation
     ```console
@@ -34,9 +32,10 @@
         eclipse &
         ```
     - Launch floodlight controller project
-1. Add information about hosts from `info.json` file via Rest API:
-    - address: `http://<controller_ip>:8080/sdnlab/hosts`
-    - method: `POST`
+1. Add information about paths from `multipath.json` file via Rest API:
+    ```console
+   curl -X POST http://127.0.0.1:8080/sdnlab/paths -H 'Content-Type: application/json' -d @jsons/multipath.json
+    ```
 1. Open mininet
     ```console
     sudo python topology.py

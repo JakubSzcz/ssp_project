@@ -35,6 +35,10 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.agh.kt.rest.LinkPortsInfo;
+import pl.edu.agh.kt.rest.RestLab;
+import pl.edu.agh.kt.rest.SingleHostInfo;
+
 public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 
 	protected IFloodlightProviderService floodlightProvider;
@@ -67,73 +71,42 @@ public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 			IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 
 		logger.info("************* NEW PACKET IN *************");
-		// PacketExtractor extractor = new PacketExtractor();
-		// extractor.packetExtract(cntx);
-
 		// TODO LAB 6
 		OFPacketIn pin = (OFPacketIn) msg;
-		// OFPort outPort = OFPort.of(0);
-		// if (pin.getInPort() == OFPort.of(1)) {
-		// outPort = OFPort.of(2);
-		// } else
-		// outPort = OFPort.of(1);
 
 		Ethernet eth = new Ethernet();
 		eth.deserialize(pin.getData(), 0, pin.getData().length);
 
 		IPv4Address dstIp;
+		IPv4Address srcIp;
 		logger.info("Type = {}", eth.getPayload().getClass().getSimpleName());
 		if (eth.getPayload() instanceof IPv4) {
 			IPv4 ipv4 = (IPv4) eth.getPayload();
 			dstIp = ipv4.getDestinationAddress();
+			srcIp = ipv4.getSourceAddress();
 		} else if (eth.getPayload() instanceof ARP) {
 			ARP arp = (ARP) eth.getPayload();
 			dstIp = arp.getTargetProtocolAddress();
+			srcIp = arp.getSenderProtocolAddress();
 		} else {
 			logger.debug("Protocol not supported");
 			return Command.STOP;
 		}
 		logger.info("SRC sw = {}", sw);
-		logger.info("IP = {}", dstIp);
-		SingleHostInfo info = Flows.hosts.getHostInfo(dstIp);
-		if (info == null) {
-			logger.debug("Host not found");
+		logger.info("src IP = {}", srcIp);
+		logger.info("dst IP = {}", dstIp);
+		List<LinkPortsInfo> path = WRRLoadBalancer.getPath(srcIp, dstIp);
+		if (path == null) {
+			logger.debug("Path not found");
 			return Command.STOP;
 		}
-		int dstSwId = info.getSw();
-		logger.info("host sw = {}", dstSwId);
-		DatapathId srcSw = sw.getId();
-		DatapathId dstSw = DatapathId.of(dstSwId);
-		if (dstSw.equals(srcSw)) {
-			Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), pin.getInPort(), true);
-		} else {
-			Route route = SdnLabListener.getRouting().calculateSpfTree(srcSw,
-					dstSw);
-			logger.info("route {}", route.getPath());
 
-			List<NodePortTuple> path = route.getPath();
+		for (int i = path.size() - 1; i >= 0; i--) {
+			LinkPortsInfo node = path.get(i);
+			logger.info("node: {}", node);
+			IOFSwitch s = switchService.getSwitch(node.getSwitchDatapathId());
+			Flows.simpleAdd(s, pin, cntx, node.getInOFPort(), node.getOutOFPort(), i == 0);
 
-			DatapathId previousId = dstSw;
-			OFPort previousPort = OFPort.of(info.getPort());
-
-			for (int i = path.size() - 1; i >= 0; i--) {
-				NodePortTuple npt = path.get(i);
-				if (npt.getNodeId().equals(previousId)) {
-					IOFSwitch s = switchService.getSwitch(npt.getNodeId());
-					logger.info("Test ID {}", npt.getNodeId());
-					logger.info("Test PORT IN {}", npt.getPortId());
-					logger.info("Test PORT OUT {}", previousPort);
-					Flows.simpleAdd(s, pin, cntx, npt.getPortId(),
-							previousPort, false);
-
-				}
-				previousId = npt.getNodeId();
-				previousPort = npt.getPortId();
-			}
-			logger.info("Test ID {}", srcSw);
-			logger.info("Test PORT IN {}", pin.getInPort());
-			logger.info("Test PORT OUT {}", previousPort);
-			Flows.simpleAdd(sw, pin, cntx, pin.getInPort(), previousPort, true);
 		}
 
 		return Command.STOP;

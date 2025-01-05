@@ -1,4 +1,4 @@
-package pl.edu.agh.kt;
+package pl.edu.agh.kt.rest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.projectfloodlight.openflow.types.DatapathId;
 import org.projectfloodlight.openflow.types.IPv4Address;
 import org.projectfloodlight.openflow.protocol.OFPortDesc;
+
 
 public class HostInfo {
 	private List<SingleHostInfo> hostList;
