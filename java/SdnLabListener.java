@@ -10,6 +10,7 @@ import org.projectfloodlight.openflow.protocol.OFType;
 import org.projectfloodlight.openflow.types.DatapathId;
 import org.projectfloodlight.openflow.types.IPv4Address;
 import org.projectfloodlight.openflow.types.OFPort;
+import org.projectfloodlight.openflow.types.TransportPort;
 
 import net.floodlightcontroller.core.FloodlightContext;
 import net.floodlightcontroller.core.IOFMessageListener;
@@ -24,6 +25,7 @@ import net.floodlightcontroller.core.IFloodlightProviderService;
 import net.floodlightcontroller.packet.ARP;
 import net.floodlightcontroller.packet.Ethernet;
 import net.floodlightcontroller.packet.IPv4;
+import net.floodlightcontroller.packet.TCP;
 import net.floodlightcontroller.restserver.IRestApiService;
 import net.floodlightcontroller.routing.IRoutingService;
 import net.floodlightcontroller.routing.Route;
@@ -70,7 +72,7 @@ public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 	public net.floodlightcontroller.core.IListener.Command receive(
 			IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 
-		logger.info("************* NEW PACKET IN *************");
+		//logger.info("************* NEW PACKET IN *************");
 		// TODO LAB 6
 		OFPacketIn pin = (OFPacketIn) msg;
 
@@ -79,34 +81,60 @@ public class SdnLabListener implements IFloodlightModule, IOFMessageListener {
 
 		IPv4Address dstIp;
 		IPv4Address srcIp;
-		logger.info("Type = {}", eth.getPayload().getClass().getSimpleName());
+		TransportPort srcPort = null;
+		TransportPort dstPort = null;
+		//logger.info("Type = {}", eth.getPayload().getClass().getSimpleName());
 		if (eth.getPayload() instanceof IPv4) {
 			IPv4 ipv4 = (IPv4) eth.getPayload();
 			dstIp = ipv4.getDestinationAddress();
 			srcIp = ipv4.getSourceAddress();
+			if (ipv4.getPayload() instanceof TCP){
+				TCP tcp = (TCP) ipv4.getPayload();
+				srcPort = tcp.getSourcePort();
+				dstPort = tcp.getDestinationPort();;
+			}
 		} else if (eth.getPayload() instanceof ARP) {
 			ARP arp = (ARP) eth.getPayload();
 			dstIp = arp.getTargetProtocolAddress();
 			srcIp = arp.getSenderProtocolAddress();
 		} else {
-			logger.debug("Protocol not supported");
+			//logger.debug("Protocol not supported");
 			return Command.STOP;
 		}
-		logger.info("SRC sw = {}", sw);
-		logger.info("src IP = {}", srcIp);
-		logger.info("dst IP = {}", dstIp);
-		List<LinkPortsInfo> path = WRRLoadBalancer.getPath(srcIp, dstIp);
+		//logger.info("SRC sw = {}", sw);
+		//logger.info("src IP = {}", srcIp);
+		//logger.info("dst IP = {}", dstIp);
+		List<LinkPortsInfo> path;
+		if (eth.getPayload() instanceof ARP){
+			path = WRRLoadBalancer.getBestPath(srcIp, dstIp);
+		}else{
+			path = WRRLoadBalancer.getPath(srcIp, dstIp);
+		}
+		
 		if (path == null) {
-			logger.debug("Path not found");
+			//logger.debug("Path not found");
 			return Command.STOP;
 		}
-
+		String pathString = "";
+		for (LinkPortsInfo node : path){
+			pathString += node.getSwitchId() + ", ";
+		}
+		
+		//logger.info("path = {}", pathString);
 		for (int i = path.size() - 1; i >= 0; i--) {
 			LinkPortsInfo node = path.get(i);
-			logger.info("node: {}", node);
 			IOFSwitch s = switchService.getSwitch(node.getSwitchDatapathId());
 			Flows.simpleAdd(s, pin, cntx, node.getInOFPort(), node.getOutOFPort(), i == 0);
-
+		}
+		if (!(eth.getPayload() instanceof ARP)){
+			logger.info("************* NEW PACKET IN *************");
+			logger.info("Type = {}", eth.getPayload().getClass().getSimpleName());
+			logger.info("SRC sw = {}", sw);
+			logger.info("src IP = {}", srcIp);
+			logger.info("dst IP = {}", dstIp);
+			logger.info("src Port = {}", srcPort);
+			logger.info("dst Port = {}", dstPort);
+			logger.info("path = {}", pathString);
 		}
 
 		return Command.STOP;
