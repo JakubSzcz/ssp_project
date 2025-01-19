@@ -72,3 +72,16 @@
         ```console
         netstat -p | grep wget
         ```
+
+## Diagrams
+1. Switch
+
+![wrr_ssp_switch](https://github.com/user-attachments/assets/0e40e726-c59a-4243-b123-3da425d3afd3)
+
+2. Controller
+
+![wrr_ssp_controller_hl](https://github.com/user-attachments/assets/0023b676-c718-4701-a9ff-e2834a3f8f8e)
+
+3. WRR
+
+![wrr_ssp_algo](https://github.com/user-attachments/assets/956a63f5-2b3c-4305-8ab4-95cfc08c9dec)
