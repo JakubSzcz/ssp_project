@@ -1,4 +1,19 @@
-# WRR LB
+# Weighted Round Robin Load Balancer​
+
+**Objective**: ​
+ - Implementing Weighted Round Robin Load Balancer​
+
+**Scope**:​
+ - SDN topology in Mininet​
+ - REST API for inserting precalculated paths ​
+ - WRR implementation​
+
+**Tools**:​
+ - Mininet​
+ - Floodlight Controler​ VM machine
+ - CURL/Postman​
+ - wget, python http server
+ - X-server e.g. VcXsrv
 
 ## Topology
 
